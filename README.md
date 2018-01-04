@@ -3,6 +3,9 @@ Holaxian - Space Invaders game like - created with graphics.h
 
 Game was created in C++ as a project for a computer science course.
 
+[Download Game.exe](https://github.com/dawidholka/Holaxian/blob/master/Game.exe)
+
+
 Project scope:
 Game mechanics:
 1. Player can move spaceship by pressing the arrow keys.
