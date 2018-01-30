@@ -10,29 +10,16 @@
 #include "Game/Ship.h"
 #include "Game/Alien.h"
 #include "Game/Boss.h"
+#include "Game/InfoBar.h"
 
-struct sizeofobjects
-{
-    int x;
-    int y;
-};
-
-struct graphics
+struct Graphics
 {
     Ship PlayerShip;
     Alien Alien;
     Boss Boss;
-    int player[42];
-    int playerdetails[24];
-    int enemy[16];
-    int enemydetail1[12];
-    int enemydetail2[12];
-    int bossbody[16];
-    int bossdetail1[12];
-    int bossdetail2[12];
     int scale;
-    Background background;
-    ParticleSystem particles;
+    Background Background;
+    ParticleSystem Particles;
 };
 
 struct enemy
@@ -47,14 +34,6 @@ struct missile
     short int state;
     int x;
     int y;
-};
-
-struct infobar
-{
-    int height;
-    char time[25];
-    char score[25];
-    char life[25];
 };
 
 class Missile
@@ -108,12 +87,12 @@ class Game
 private:
     SettingList settings;
     bool debug;//TRYB DEBUG
-    struct graphics graphics;
-    struct sizeofobjects playersize;
-    struct sizeofobjects enemysize;
-    struct sizeofobjects collision;
-    struct sizeofobjects bosssize;
-    struct infobar infobar;
+    struct Graphics Graphics;
+    iXY PlayerSize;
+    iXY EnemySize;
+    iXY BossSize;
+    iXY Collision;
+    InfoBar *Bar;
     struct gamedata data;
 
     void pause();
@@ -170,6 +149,7 @@ private:
     bool isGameRunning;
 public:
     Game(bool debugflag,bool loadgame);
+    ~Game();
     void run();
     bool exitGame;
 };

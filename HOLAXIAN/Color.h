@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 #include <stdio.h>
+#include <iostream>
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
@@ -34,6 +35,19 @@
 #define IN_STAGE_SCREEN 2
 #define IN_GAME 1
 #define NEW_GAME 2
+
+typedef struct fXY
+{
+    float x;
+    float y;
+} fXY;
+
+typedef struct iXY
+{
+    int x;
+    int y;
+} iXY;
+
 
 class PlayerMissile{
 public:

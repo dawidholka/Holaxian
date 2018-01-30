@@ -6,14 +6,13 @@ Engine::Engine(int width_,int height_,bool debug_)
     height=height_;
     width=width_;
     debug=debug_;
-    if(debug)
-    {
-        printf("Tryb DEBUG\n");
+    if(debug){
+        std::cout << "DEBUG MODE\n";
     }else{
         HWND Stealth;
- AllocConsole();
- Stealth = FindWindowA("ConsoleWindowClass", NULL);
- ShowWindow(Stealth,0);
+        AllocConsole();
+        Stealth = FindWindowA("ConsoleWindowClass", NULL);
+        ShowWindow(Stealth,0);
     }
     initwindow(width,height,"Holaxian",0,0,true,true);
 }
@@ -38,11 +37,15 @@ void Engine::settings()
 
 bool Engine::game(bool loadgame)
 {
-    Game game(debug,loadgame);
-    game.run();
-    return game.exitGame;
+    Game *game = new Game(debug,loadgame);
+    game->run();
+    bool exit = game->exitGame;
+    delete game;
+    game = NULL;
+    return exit;
 }
 
+//TODO Specjalny plik z funkcjami pomocnicznymi i typami np iXY fXY albo specjalna klasas np na plik input i potem dziedziczenie do gry engine itp
 bool Engine::fileExist(char filename[])
 {
     FILE *savedat;
@@ -50,18 +53,12 @@ bool Engine::fileExist(char filename[])
     fclose(savedat);
     if(savedat==NULL)
     {
-        if(debug)
-        {
-            printf("Brak pliku %s\n",filename);
-        }
+        if(debug){std::cout << "File not found: " << filename << "\n"; }
         return false;
     }
     else
     {
-        if(debug)
-        {
-            printf("Wykryto plik %s\n",filename);
-        }
+        if(debug){ std::cout << "File found: " << filename << "\n"; }
         return true;
     }
 }
@@ -117,3 +114,5 @@ int Engine::run()
     }
     return 0;
 }
+
+

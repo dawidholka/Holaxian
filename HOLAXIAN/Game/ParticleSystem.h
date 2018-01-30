@@ -2,18 +2,12 @@
 #define PARTICLESYSTEM_H
 #include "../Color.h"
 
-typedef struct point_xy
-{
-    float x;
-    float y;
-} point_xy;
-
 class Particle
 {
 public:
-    point_xy position;
-    point_xy velocity;
-    point_xy acceleration;
+    fXY position;
+    fXY velocity;
+    fXY acceleration;
     float lifespan;
     int color;
     Particle();

@@ -4,62 +4,22 @@ Game::Game(bool debugflag,bool loadgame)
 {
     //WCZYTYWANIE USTAWIEN Z PLIKU
     debug=debugflag;
-    if(debug)
-    {
-        printf("NOWA GRA\n");
-    }
     Settings *getsettings = new Settings(debug);
     getsettings->get(&settings);
     delete getsettings;
     getsettings=NULL;
+
+
     //GRAFIKA
     //graphics.playership = new Ship;
-    int hero1[42]= {6,0,8,0,8,5,10,5,10,17,12,17,12,25,14,25,14,32,8,32,8,35,6,35,6,32,0,32,0,25,2,25,2,17,4,17,4,5,6,5,6,0};
-    int hero2[24]= {6,19,8,19,8,21,10,21,10,24,8,24,8,22,6,22,6,24,4,24,4,21,6,21};
-    int alien1[16]= {3,0,14,0,17,3,17,10,12,15,5,15,0,10,0,3};
-    int alien2[12]= {4,4,6,4,7,5,7,8,6,8,3,5};
-    int alien3[12]= {11,4,13,4,14,5,11,8,10,8,10,5};
-    for(int i=0; i<42; i++)
-    {
-        graphics.player[i]=hero1[i];
-    }
-    for(int i=0; i<24; i++)
-    {
-        graphics.playerdetails[i]=hero2[i];
-    }
-    for(int i=0; i<16; i++)
-    {
-        graphics.enemy[i]=alien1[i];
-    }
-    for(int i=0; i<12; i++)
-    {
-        graphics.enemydetail1[i]=alien2[i];
-    }
-    for(int i=0; i<12; i++)
-    {
-        graphics.enemydetail2[i]=alien3[i];
-    }
-    for(int i=0; i<16; i++)
-    {
-        graphics.bossbody[i]=alien1[i];
-    }
-    for(int i=0; i<12; i++)
-    {
-        graphics.bossdetail1[i]=alien2[i];
-    }
-    for(int i=0; i<12; i++)
-    {
-        graphics.bossdetail2[i]=alien3[i];
-    }
-    graphics.scale=getmaxy()*0.05/14.0;
-    playersize.x=graphics.scale*14;
-    playersize.y=graphics.scale*36;
-    graphics.scale = getmaxx()/(12.0+11.0*0.5+4.0)/18.0;
-    enemysize.x = graphics.scale*18.0;
-    enemysize.y = graphics.scale*16.0;
-    bosssize.x=enemysize.x*3;
-    bosssize.y=enemysize.y*3;
-    infobar.height=getmaxy()*0.09;
+    Graphics.scale=getmaxy()*0.05/14.0;
+    PlayerSize.x=Graphics.scale*14;
+    PlayerSize.y=Graphics.scale*36;
+    Graphics.scale = getmaxx()/(12.0+11.0*0.5+4.0)/18.0;
+    EnemySize.x = Graphics.scale*18.0;
+    EnemySize.y = Graphics.scale*16.0;
+    BossSize.x=EnemySize.x*3;
+    BossSize.y=EnemySize.y*3;
     enemymissilespeed=2;
     chancetoattack=150;
     frame=0;
@@ -69,7 +29,7 @@ Game::Game(bool debugflag,bool loadgame)
     enemymissilespeed=2*settings.missilespeed;
     if(loadgame)
     {
-        //LADOWANIE GRY
+        if(debug){ std::cout << "LOADING GAME FROM SAVE\n"; }
         FILE *savedat;
         savedat=fopen("save.dat","r+b");
         fread(&data,sizeof(data),1,savedat);
@@ -88,7 +48,7 @@ Game::Game(bool debugflag,bool loadgame)
             int y;
             fread(&x,sizeof(x),1,savedat);
             fread(&y,sizeof(y),1,savedat);
-            int dx=bosssize.x/4;
+            int dx=BossSize.x/4;
             for(int i=0; i<5; i++)
             {
                 bossmissile.push_back(PlayerMissile((x+i*dx),(y)));
@@ -99,6 +59,7 @@ Game::Game(bool debugflag,bool loadgame)
     else
     {
         //NOWA GRA
+        if(debug){ std::cout << "NEW GAME\n"; }
         data.boss.stage=false;
         data.enemymissile.state=NO_MISSILE;
         data.score=0;
@@ -112,15 +73,20 @@ Game::Game(bool debugflag,bool loadgame)
         setEnemies();
         data.stagetime=data.numofenemies*4*settings.time;
         data.timeleft=data.stagetime;
-        data.playerx=(getmaxx()-playersize.x)/2;
-        data.playery=getmaxy()-(playersize.y*1.5);
+        data.playerx=(getmaxx()-PlayerSize.x)/2;
+        data.playery=getmaxy()-(PlayerSize.y*1.5);
     }
     exitGame=false;
     gamestatus=IN_STAGE_SCREEN;
-    sprintf(infobar.score,"SCORE: %d",data.score);
-    sprintf(infobar.time,"TIME: %d",data.timeleft);
-    sprintf(infobar.life,"LIFE: %d",data.life);
+    //sprintf(infobar.score,"SCORE: %d",data.score);
+    //sprintf(infobar.time,"TIME: %d",data.timeleft);
+    //sprintf(infobar.life,"LIFE: %d",data.life);
     sprintf(stagetext,"STAGE: %d",data.stage);
+
+    Bar = new InfoBar;
+    Bar->SetScore(data.score);
+    Bar->SetLife(data.life);
+    Bar->SetTime(data.timeleft);
     isGameRunning=true;
     settextstyle(GOTHIC_FONT,HORIZ_DIR,3);
 }
@@ -146,7 +112,7 @@ void Game::sendPlayerMissile()
 {
     if(data.currentplayermissile<data.maxplayermissile)
     {
-        playermissile.push_back(PlayerMissile((data.playerx+(playersize.x/2)),(data.playery-25)));
+        playermissile.push_back(PlayerMissile((data.playerx+(PlayerSize.x/2)),(data.playery-25)));
         ++data.currentplayermissile;
         if(debug)
         {
@@ -167,8 +133,8 @@ void Game::updateBossMissile()
             }
             bossmissile.erase(it--);
             --data.life;
-            sprintf(infobar.life,"LIFE: %d",data.life);
-            data.playerx=(800-playersize.x)/2;
+            Bar->SetLife(data.life);
+            data.playerx=(800-PlayerSize.x)/2;
             data.boss.attack=false;
         }
         else
@@ -218,11 +184,11 @@ void Game::updatePlayerMissile()
                 --data.currentplayermissile;
                 ++data.score;
                 --data.boss.life;
-                sprintf(infobar.score,"SCORE: %d",data.score);
+                Bar->SetScore(data.score);
             }
             else
             {
-                if(it->y<infobar.height)
+                if(it->y<Bar->GetHeight())
                 {
                     playermissile.erase(it--);
                     --data.currentplayermissile;
@@ -239,28 +205,28 @@ void Game::updatePlayerMissile()
             {
                 for(int k=0; k<12; k++)
                 {
-                    if(it->x>=data.enemy[0][k].positionX&&it->x<=(data.enemy[0][k].positionX+enemysize.x*1))
+                    if(it->x>=data.enemy[0][k].positionX&&it->x<=(data.enemy[0][k].positionX+EnemySize.x*1))
                     {
-                        collision.x=k;
+                        Collision.x=k;
                     }
                 }
                 for(int w=0; w<3; w++)
                 {
-                    if(it->y>=data.enemy[w][collision.x].positionY)
+                    if(it->y>=data.enemy[w][Collision.x].positionY)
                     {
-                        collision.y=w;
+                        Collision.y=w;
                     }
                 }
-                data.enemy[collision.y][collision.x].lives--;
+                data.enemy[Collision.y][Collision.x].lives--;
                 ++data.score;
-                sprintf(infobar.score,"SCORE: %d",data.score);
+                Bar->SetScore(data.score);
                 playermissile.erase(it--);
                 --data.currentplayermissile;
                 data.numofenemies--;
                 rand();
                 if(debug)
                 {
-                    printf("Gracz trafil przeciwnika %d %d\n",collision.y,collision.x);
+                    printf("Gracz trafil przeciwnika %d %d\n",Collision.y,Collision.x);
                 }
                 if(data.bonus.drop==false&&data.numofenemies>0)
                 {
@@ -287,8 +253,8 @@ void Game::updatePlayerMissile()
                         {
                             data.bonus.color=COLOR_BONUS_WEAPON; // DODATKOWY POCISK
                         }
-                        data.bonus.x=data.enemy[collision.y][collision.x].positionX+enemysize.x/2-10;
-                        data.bonus.y=data.enemy[collision.y][collision.x].positionY;
+                        data.bonus.x=data.enemy[Collision.y][Collision.x].positionX+EnemySize.x/2-10;
+                        data.bonus.y=data.enemy[Collision.y][Collision.x].positionY;
                     }
                 }
             }
@@ -296,7 +262,7 @@ void Game::updatePlayerMissile()
             {
                 it->y-=missilespeed;
             }
-            if(it->y<infobar.height)
+            if(it->y<Bar->GetHeight())
             {
                 playermissile.erase(it--);
                 --data.currentplayermissile;
@@ -359,9 +325,9 @@ void Game::assortingEnemies(int difficulty,struct enemy enemy[][12])
 void Game::setEnemies()
 {
     data.numofenemies=0;
-    for(int w=0,py=getmaxy()*0.15; w<3; w++,py+=(enemysize.y*1.5))
+    for(int w=0,py=getmaxy()*0.15; w<3; w++,py+=(EnemySize.y*1.5))
     {
-        for(int k=0,px=(enemysize.x*2); k<12; k++,px+=(enemysize.x*1.5))
+        for(int k=0,px=(EnemySize.x*2); k<12; k++,px+=(EnemySize.x*1.5))
         {
             data.enemy[w][k].positionX=px;
             data.enemy[w][k].positionY=py;
@@ -381,7 +347,7 @@ void Game::printEnemies()
 {
     if(data.boss.stage)
     {
-        graphics.Boss.Draw(data.boss.x,data.boss.y);
+        Graphics.Boss.Draw(data.boss.x,data.boss.y);
     }
     else
     {
@@ -391,22 +357,11 @@ void Game::printEnemies()
             {
                 if(data.enemy[w][k].lives==1)
                 {
-                    graphics.Alien.Draw(data.enemy[w][k].positionX,data.enemy[w][k].positionY);
+                    Graphics.Alien.Draw(data.enemy[w][k].positionX,data.enemy[w][k].positionY);
                 }
             }
         }
     }
-}
-
-void Game::printInfoBar()
-{
-    setfillstyle(SOLID_FILL,BLACK);
-    setbkcolor(BLACK);
-    setcolor(WHITE);
-    bar(0,0,getmaxx()+1,infobar.height);
-    outtextxy(0,((infobar.height-textheight(infobar.score))/2),infobar.score);
-    outtextxy((getmaxx()-textwidth(infobar.time))/2,((infobar.height-textheight(infobar.time))/2),infobar.time);
-    outtextxy(getmaxx()-textwidth(infobar.life),((infobar.height-textheight(infobar.life))/2),infobar.life);
 }
 
 void Game::updateTime()
@@ -414,7 +369,7 @@ void Game::updateTime()
     if((timeendstage-time(NULL))!=data.timeleft)
     {
         data.timeleft = timeendstage-time(NULL);
-        sprintf(infobar.time,"TIME: %d",data.timeleft);
+        Bar->SetTime(data.timeleft);
         data.stagetime=data.timeleft;
     }
 }
@@ -520,8 +475,8 @@ void Game::attackingPlayer()
             {
                 printf("Atakuje przeciwnik %d %d\n",line,column);
             }
-            data.enemymissile.x=(data.enemy[line][column].positionX+enemysize.x/2);
-            data.enemymissile.y=data.enemy[line][column].positionY+enemysize.y;
+            data.enemymissile.x=(data.enemy[line][column].positionX+EnemySize.x/2);
+            data.enemymissile.y=data.enemy[line][column].positionY+EnemySize.y;
             data.enemymissile.state=MISSILE_LUNCHED;
         }
     }
@@ -538,8 +493,8 @@ void Game::moveEnemyMissile()
                 printf("Przeciwnik trafil gracza! \n");
             }
             --data.life;
-            sprintf(infobar.life,"LIFE: %d",data.life);
-            data.playerx=(getmaxx()-playersize.x)/2;
+            Bar->SetLife(data.life);
+            data.playerx=(getmaxx()-PlayerSize.x)/2;
             data.enemymissile.state=NO_MISSILE;
         }
         if(data.enemymissile.y<getmaxy())
@@ -566,7 +521,7 @@ void Game::newStage()
         data.boss.stage=true;
         data.boss.direction=rand()/(float(RAND_MAX)+1)*2;
         data.boss.life=data.stage*5;
-        data.boss.x=(getmaxx()-bosssize.x)/2;
+        data.boss.x=(getmaxx()-BossSize.x)/2;
         data.boss.y=getmaxy()*0.15;
         data.stagetime=data.stage*50;
         if(debug)
@@ -589,8 +544,8 @@ void Game::newStage()
     data.bonus.drop=false;
     gamestatus=IN_STAGE_SCREEN;
     sprintf(stagetext,"STAGE: %d",data.stage);
-    data.playerx=(getmaxx()-playersize.x)/2;
-    data.playery=getmaxy()-(playersize.y*1.5);
+    data.playerx=(getmaxx()-PlayerSize.x)/2;
+    data.playery=getmaxy()-(PlayerSize.y*1.5);
     flushPlayerMissile();
     flushBossMissile();
 }
@@ -638,7 +593,7 @@ void Game::updateBonus()
             }
             if(data.bonus.color==COLOR_BONUS_HEALTH)
             {
-                sprintf(infobar.life,"LIFE: %d",++data.life);
+                Bar->SetLife(++data.life);
             }
             else
             {
@@ -688,7 +643,7 @@ void Game::updateBoss()
     }
     else
     {
-        if((data.boss.x+bosssize.x)<getmaxx())
+        if((data.boss.x+BossSize.x)<getmaxx())
         {
             ++data.boss.x;
         }
@@ -705,10 +660,10 @@ void Game::updateBoss()
             printf("Boss atakuje!\n");
         }
         data.boss.attack=true;
-        int dx=bosssize.x/4;
+        int dx=BossSize.x/4;
         for(int i=0; i<5; i++)
         {
-            bossmissile.push_back(PlayerMissile((data.boss.x+i*dx),(data.boss.y+bosssize.y)));
+            bossmissile.push_back(PlayerMissile((data.boss.x+i*dx),(data.boss.y+BossSize.y)));
         }
     }
     if(data.boss.attack==true)
@@ -749,18 +704,18 @@ void Game::update()
         updatePlayerMissile();
         updateBonus();
         attackingPlayer();
-        graphics.background.update();
+        Graphics.Background.update();
         moveEnemyMissile();
         switch(code)
         {
         case KEY_RIGHT:
-            if(data.playerx<(getmaxx()-playersize.x*2))
+            if(data.playerx<(getmaxx()-PlayerSize.x*2))
             {
                 data.playerx+=playerspeed;
             }
             break;
         case KEY_LEFT:
-            if(data.playerx>playersize.x)
+            if(data.playerx>PlayerSize.x)
             {
                 data.playerx-=playerspeed;
             }
@@ -799,14 +754,13 @@ void Game::render()
     case IN_GAME:
         setbkcolor(COLOR_BG);
         cleardevice();
-        graphics.PlayerShip.Draw(data.playerx,data.playery);
-        graphics.background.render();
-        //printPoly(data.playerx,data.playery,COLOR_HERO,graphics.player,42,21);
-        //printPoly(data.playerx,data.playery,COLOR_HERO_DETAILS,graphics.playerdetails,24,12);
+        Graphics.PlayerShip.Draw(data.playerx,data.playery);
+        Graphics.Background.render();
         printEnemies();
-        printInfoBar();
+        //printInfoBar();
+        Bar->Draw();
         printBonus();
-        graphics.particles.run(data.playerx+playersize.x/2-1,data.playery+playersize.y-2);
+        Graphics.Particles.run(data.playerx+PlayerSize.x/2-1,data.playery+PlayerSize.y-2);
         printPlayerMissile();
         if(data.boss.stage)
         {
@@ -828,4 +782,10 @@ void Game::render()
         outtextxy((getmaxx()-textwidth("PRESS ANY KEY TO PLAY"))/2,((2*textheight("PRESS ANY KEY TO PLAY"))/2),"PRESS ANY KEY TO PLAY");
         break;
     }
+}
+
+Game::~Game()
+{
+    delete Bar;
+    Bar = NULL;
 }
