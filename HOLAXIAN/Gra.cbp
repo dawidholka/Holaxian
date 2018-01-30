@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Gra" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Gra" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Gra" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Color.h" />
+		<Unit filename="Engine.cpp" />
+		<Unit filename="Engine.h" />
+		<Unit filename="Game.cpp" />
+		<Unit filename="Game.h" />
+		<Unit filename="Game/Background.cpp" />
+		<Unit filename="Game/Background.h" />
+		<Unit filename="Game/GameOver.cpp" />
+		<Unit filename="Game/GameOver.h" />
+		<Unit filename="Game/ParticleSystem.cpp" />
+		<Unit filename="Game/ParticleSystem.h" />
+		<Unit filename="Game/Pause.cpp" />
+		<Unit filename="Game/Pause.h" />
+		<Unit filename="Game/Poly.cpp" />
+		<Unit filename="Game/Poly.h" />
+		<Unit filename="Game/Ship.cpp" />
+		<Unit filename="Game/Ship.h" />
+		<Unit filename="Game/Text.cpp" />
+		<Unit filename="Game/Text.h" />
+		<Unit filename="Help.cpp" />
+		<Unit filename="Help.h" />
+		<Unit filename="Menu.cpp" />
+		<Unit filename="Menu.h" />
+		<Unit filename="Ranking.cpp" />
+		<Unit filename="Ranking.h" />
+		<Unit filename="Settings.cpp" />
+		<Unit filename="Settings.h" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
