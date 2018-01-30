@@ -1,18 +1,19 @@
 #ifndef POLY_H
 #define POLY_H
 #include <graphics.h>
-#include <stdio.h>
 
-class Poly{
+class Poly
+{
 protected:
-    int *Pixels; // tablica pixeli
-    int NumOfPixels;
-    void MovePixels();
-    int color;
+    int NumberOfPixels;
+    int *Pixels;
+    int Color;
+    int Scale;
 public:
+    void Set(int T[], int color_,int scale_);
     void Draw(int x, int y);
-    void wypelnij(int tab[]);
-    Poly(int N, int color);
+    Poly(int N);
+    ~Poly();
 };
 
 #endif

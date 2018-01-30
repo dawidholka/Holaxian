@@ -54,15 +54,7 @@ Game::Game(bool debugflag,bool loadgame)
     graphics.scale=getmaxy()*0.05/14.0;
     playersize.x=graphics.scale*14;
     playersize.y=graphics.scale*36;
-    scalePoly(42,graphics.player,graphics.scale);
-    scalePoly(24,graphics.playerdetails,graphics.scale);
     graphics.scale = getmaxx()/(12.0+11.0*0.5+4.0)/18.0;
-    scalePoly(16,graphics.enemy,graphics.scale);
-    scalePoly(12,graphics.enemydetail1,graphics.scale);
-    scalePoly(12,graphics.enemydetail2,graphics.scale);
-    scalePoly(16,graphics.bossbody,graphics.scale*3);
-    scalePoly(12,graphics.bossdetail1,graphics.scale*3);
-    scalePoly(12,graphics.bossdetail2,graphics.scale*3);
     enemysize.x = graphics.scale*18.0;
     enemysize.y = graphics.scale*16.0;
     bosssize.x=enemysize.x*3;
@@ -327,36 +319,6 @@ void Game::printMissile(int x,int y,int color)
     bar(x,y,x+3,y+25);
 }
 
-void Game::scalePoly(int poly, int pixele[],int skala)
-{
-    for(int i=0; i<poly; i++)
-    {
-        pixele[i]=pixele[i]*skala;
-    }
-}
-
-void Game::movePoly(int x, int y, int siatka[],int rozmiarsiatki)
-{
-    for(int i=0; i<rozmiarsiatki; i+=2)
-    {
-        siatka[i]+=x;
-    }
-    for(int i=1; i<rozmiarsiatki; i+=2)
-    {
-        siatka[i]+=y;
-    }
-}
-
-void Game::printPoly(int x,int y,int kolor,int siatka[],int rozmiarsiatki,int polsiatki)
-{
-    setcolor(kolor);
-    setfillstyle(SOLID_FILL,kolor);
-    setlinestyle(SOLID_LINE,0,NORM_WIDTH);
-    movePoly(x,y,siatka,rozmiarsiatki);
-    fillpoly(polsiatki,siatka);
-    movePoly(-x,-y,siatka,rozmiarsiatki);
-}
-
 void Game::assortingEnemies(int difficulty,struct enemy enemy[][12])
 {
     //LOSOWE ROZMIESZCZENIE PRZECIWNKÓW NA PODSTAWIE POZIOMU TRUDNOSCI
@@ -419,9 +381,7 @@ void Game::printEnemies()
 {
     if(data.boss.stage)
     {
-        printPoly(data.boss.x,data.boss.y,COLOR_BOSS,graphics.bossbody,16,8);
-        printPoly(data.boss.x,data.boss.y,BLACK,graphics.bossdetail1,12,6);
-        printPoly(data.boss.x,data.boss.y,BLACK,graphics.bossdetail2,12,6);
+        graphics.Boss.Draw(data.boss.x,data.boss.y);
     }
     else
     {
@@ -431,9 +391,7 @@ void Game::printEnemies()
             {
                 if(data.enemy[w][k].lives==1)
                 {
-                    printPoly(data.enemy[w][k].positionX,data.enemy[w][k].positionY,COLOR_ENEMY,graphics.enemy,16,8);
-                    printPoly(data.enemy[w][k].positionX,data.enemy[w][k].positionY,BLACK,graphics.enemydetail1,12,6);
-                    printPoly(data.enemy[w][k].positionX,data.enemy[w][k].positionY,BLACK,graphics.enemydetail2,12,6);
+                    graphics.Alien.Draw(data.enemy[w][k].positionX,data.enemy[w][k].positionY);
                 }
             }
         }
@@ -841,7 +799,7 @@ void Game::render()
     case IN_GAME:
         setbkcolor(COLOR_BG);
         cleardevice();
-        graphics.playership.Draw(data.playerx,data.playery);
+        graphics.PlayerShip.Draw(data.playerx,data.playery);
         graphics.background.render();
         //printPoly(data.playerx,data.playery,COLOR_HERO,graphics.player,42,21);
         //printPoly(data.playerx,data.playery,COLOR_HERO_DETAILS,graphics.playerdetails,24,12);

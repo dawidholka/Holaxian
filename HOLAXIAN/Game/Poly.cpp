@@ -1,40 +1,51 @@
 #include "Poly.h"
 
-Poly::Poly(int N, int color):
-    NumOfPixels(N),color(color)
+Poly::Poly(int N)
 {
-    Pixels = new int[NumOfPixels];
+    NumberOfPixels = N;
+    Pixels = new int[NumberOfPixels];
+    for(int i=0;i<NumberOfPixels;++i){
+        Pixels[i]=0;
+    }
 }
 
-void Poly::wypelnij(int tab[])
+void Poly::Set(int T[],int color_,int scale_)
 {
-    for(int i=0;i<NumOfPixels;i++){
-        Pixels[i] = tab[i];
+    Color = color_;
+    Scale = scale_;
+    for(int i=0; i<NumberOfPixels; i++)
+    {
+        Pixels[i]=T[i]*Scale;
     }
 }
 
 void Poly::Draw(int x, int y)
 {
-    for(int i=0; i<NumOfPixels; i+=2)
+    setcolor(Color);
+    setfillstyle(SOLID_FILL,Color);
+    setlinestyle(SOLID_LINE,0,NORM_WIDTH);
+    for(int i=0; i<NumberOfPixels; i+=2)
     {
         Pixels[i]+=x;
     }
-    for(int i=1; i<NumOfPixels; i+=2)
+    for(int i=1; i<NumberOfPixels; i+=2)
     {
         Pixels[i]+=y;
-        printf("%d\n",Pixels[i]);
     }
-    printf("DRUKUJE\n");
-    setcolor(WHITE);
-    setfillstyle(SOLID_FILL,WHITE);
-    setlinestyle(SOLID_LINE,0,NORM_WIDTH);
-    fillpoly(NumOfPixels/2,(int*)NumOfPixels);
-    for(int i=0; i<NumOfPixels; i+=2)
+    fillpoly(NumberOfPixels/2,Pixels);
+        for(int i=0; i<NumberOfPixels; i+=2)
     {
-        Pixels[i]-=x;
+        Pixels[i]+=(-x);
     }
-    for(int i=1; i<NumOfPixels; i+=2)
+    for(int i=1; i<NumberOfPixels; i+=2)
     {
-        Pixels[i]-=y;
+        Pixels[i]+=(-y);
     }
+}
+
+Poly::~Poly()
+{
+    delete[] Pixels;
+    Pixels = NULL;
+    NumberOfPixels = 0;
 }

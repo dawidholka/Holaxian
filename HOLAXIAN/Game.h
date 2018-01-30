@@ -8,6 +8,8 @@
 #include "Game/Background.h"
 #include "Game/GameOver.h"
 #include "Game/Ship.h"
+#include "Game/Alien.h"
+#include "Game/Boss.h"
 
 struct sizeofobjects
 {
@@ -17,7 +19,9 @@ struct sizeofobjects
 
 struct graphics
 {
-    Ship playership;
+    Ship PlayerShip;
+    Alien Alien;
+    Boss Boss;
     int player[42];
     int playerdetails[24];
     int enemy[16];
