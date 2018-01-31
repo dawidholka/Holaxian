@@ -3,21 +3,21 @@
 #include "Color.h"
 #include "Settings.h"
 #include "Help.h"
-#include "Game/ParticleSystem.h"
+#include "Game/Graphics/ParticleSystem.h"
 #include "Game/Pause.h"
-#include "Game/Background.h"
+#include "Game/Graphics/Background.h"
 #include "Game/GameOver.h"
-#include "Game/Ship.h"
-#include "Game/Alien.h"
-#include "Game/Boss.h"
+#include "Game/Graphics/Ship.h"
+#include "Game/Graphics/Alien.h"
+#include "Game/Graphics/Boss.h"
 #include "Game/InfoBar.h"
+#include "Game/Objects/Player.h"
 
 struct Graphics
 {
     Ship PlayerShip;
     Alien Alien;
     Boss Boss;
-    int scale;
     Background Background;
     ParticleSystem Particles;
 };
@@ -65,8 +65,8 @@ struct boss
 
 struct gamedata
 {
-    int playerx;
-    int playery;
+    //int playerx;
+    //int playery;
     int difficulty;
     int score;
     int life;
@@ -88,13 +88,11 @@ private:
     SettingList settings;
     bool debug;//TRYB DEBUG
     struct Graphics Graphics;
-    iXY PlayerSize;
-    iXY EnemySize;
-    iXY BossSize;
     iXY Collision;
-    InfoBar *Bar;
+    InfoBar InformationBar;
     struct gamedata data;
 
+    Player Player;
     void pause();
     void saveGame();
     void help();
@@ -127,7 +125,7 @@ private:
     //USTAWIANIE PRZECIWNIKOW
     void assortingEnemies(int difficulty,struct enemy enemy[][12]);
     void setEnemies();
-    bool isAlreadyDrawn(int num,int tab[],int how);//SPRAWDZA CZY LICZBA ZNAJDUJE SIE JUZ W TABELI
+    bool isAlreadyDrawn(int num,int tab[],int how);//SPRAWDZA CZY LICZBA ZNAJDUJE SIE JUZ W TABELI //TODO DO FUNKCJI POMOCNICZYCH
     int timeendstage;
     int frame;
     void attackingPlayer();

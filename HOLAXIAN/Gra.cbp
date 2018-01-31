@@ -36,10 +36,16 @@
 		<Unit filename="Engine.h" />
 		<Unit filename="Game.cpp" />
 		<Unit filename="Game.h" />
+		<Unit filename="Game/Alien.cpp" />
+		<Unit filename="Game/Alien.h" />
 		<Unit filename="Game/Background.cpp" />
 		<Unit filename="Game/Background.h" />
+		<Unit filename="Game/Boss.cpp" />
+		<Unit filename="Game/Boss.h" />
 		<Unit filename="Game/GameOver.cpp" />
 		<Unit filename="Game/GameOver.h" />
+		<Unit filename="Game/InfoBar.cpp" />
+		<Unit filename="Game/InfoBar.h" />
 		<Unit filename="Game/ParticleSystem.cpp" />
 		<Unit filename="Game/ParticleSystem.h" />
 		<Unit filename="Game/Pause.cpp" />

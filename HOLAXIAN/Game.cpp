@@ -1,5 +1,8 @@
 #include "Game.h"
 
+// TODO Change printf() to std::cout
+// TODO Change fwrite to fstream
+
 Game::Game(bool debugflag,bool loadgame)
 {
     //WCZYTYWANIE USTAWIEN Z PLIKU
@@ -9,17 +12,6 @@ Game::Game(bool debugflag,bool loadgame)
     delete getsettings;
     getsettings=NULL;
 
-
-    //GRAFIKA
-    //graphics.playership = new Ship;
-    Graphics.scale=getmaxy()*0.05/14.0;
-    PlayerSize.x=Graphics.scale*14;
-    PlayerSize.y=Graphics.scale*36;
-    Graphics.scale = getmaxx()/(12.0+11.0*0.5+4.0)/18.0;
-    EnemySize.x = Graphics.scale*18.0;
-    EnemySize.y = Graphics.scale*16.0;
-    BossSize.x=EnemySize.x*3;
-    BossSize.y=EnemySize.y*3;
     enemymissilespeed=2;
     chancetoattack=150;
     frame=0;
@@ -48,7 +40,7 @@ Game::Game(bool debugflag,bool loadgame)
             int y;
             fread(&x,sizeof(x),1,savedat);
             fread(&y,sizeof(y),1,savedat);
-            int dx=BossSize.x/4;
+            int dx=Graphics.Boss.GetSizeX()/4;
             for(int i=0; i<5; i++)
             {
                 bossmissile.push_back(PlayerMissile((x+i*dx),(y)));
@@ -73,26 +65,22 @@ Game::Game(bool debugflag,bool loadgame)
         setEnemies();
         data.stagetime=data.numofenemies*4*settings.time;
         data.timeleft=data.stagetime;
-        data.playerx=(getmaxx()-PlayerSize.x)/2;
-        data.playery=getmaxy()-(PlayerSize.y*1.5);
+        Player.SetPositionX(Graphics.PlayerShip.ResetX());
+        Player.SetPositionY(Graphics.PlayerShip.ResetY());
     }
     exitGame=false;
     gamestatus=IN_STAGE_SCREEN;
-    //sprintf(infobar.score,"SCORE: %d",data.score);
-    //sprintf(infobar.time,"TIME: %d",data.timeleft);
-    //sprintf(infobar.life,"LIFE: %d",data.life);
     sprintf(stagetext,"STAGE: %d",data.stage);
-
-    Bar = new InfoBar;
-    Bar->SetScore(data.score);
-    Bar->SetLife(data.life);
-    Bar->SetTime(data.timeleft);
+    InformationBar.SetScore(data.score);
+    InformationBar.SetLife(data.life);
+    InformationBar.SetTime(data.timeleft);
     isGameRunning=true;
     settextstyle(GOTHIC_FONT,HORIZ_DIR,3);
 }
 
 void Game::run()
 {
+    // Main game loop
     while(isGameRunning)
     {
         input();
@@ -112,7 +100,7 @@ void Game::sendPlayerMissile()
 {
     if(data.currentplayermissile<data.maxplayermissile)
     {
-        playermissile.push_back(PlayerMissile((data.playerx+(PlayerSize.x/2)),(data.playery-25)));
+        playermissile.push_back(PlayerMissile((Player.GetPositionX()+(Graphics.PlayerShip.GetSizeX()/2)),(Player.GetPositionY()-25)));
         ++data.currentplayermissile;
         if(debug)
         {
@@ -133,8 +121,8 @@ void Game::updateBossMissile()
             }
             bossmissile.erase(it--);
             --data.life;
-            Bar->SetLife(data.life);
-            data.playerx=(800-PlayerSize.x)/2;
+            InformationBar.SetLife(data.life);
+            Player.SetPositionX(Graphics.PlayerShip.ResetX());
             data.boss.attack=false;
         }
         else
@@ -184,11 +172,11 @@ void Game::updatePlayerMissile()
                 --data.currentplayermissile;
                 ++data.score;
                 --data.boss.life;
-                Bar->SetScore(data.score);
+                InformationBar.SetScore(data.score);
             }
             else
             {
-                if(it->y<Bar->GetHeight())
+                if(it->y<InformationBar.GetHeight())
                 {
                     playermissile.erase(it--);
                     --data.currentplayermissile;
@@ -205,7 +193,7 @@ void Game::updatePlayerMissile()
             {
                 for(int k=0; k<12; k++)
                 {
-                    if(it->x>=data.enemy[0][k].positionX&&it->x<=(data.enemy[0][k].positionX+EnemySize.x*1))
+                    if(it->x>=data.enemy[0][k].positionX&&it->x<=(data.enemy[0][k].positionX+Graphics.Alien.GetSizeX()*1))
                     {
                         Collision.x=k;
                     }
@@ -219,7 +207,7 @@ void Game::updatePlayerMissile()
                 }
                 data.enemy[Collision.y][Collision.x].lives--;
                 ++data.score;
-                Bar->SetScore(data.score);
+                InformationBar.SetScore(data.score);
                 playermissile.erase(it--);
                 --data.currentplayermissile;
                 data.numofenemies--;
@@ -253,7 +241,7 @@ void Game::updatePlayerMissile()
                         {
                             data.bonus.color=COLOR_BONUS_WEAPON; // DODATKOWY POCISK
                         }
-                        data.bonus.x=data.enemy[Collision.y][Collision.x].positionX+EnemySize.x/2-10;
+                        data.bonus.x=data.enemy[Collision.y][Collision.x].positionX+Graphics.Alien.GetSizeX()/2-10;
                         data.bonus.y=data.enemy[Collision.y][Collision.x].positionY;
                     }
                 }
@@ -262,7 +250,7 @@ void Game::updatePlayerMissile()
             {
                 it->y-=missilespeed;
             }
-            if(it->y<Bar->GetHeight())
+            if(it->y<InformationBar.GetHeight())
             {
                 playermissile.erase(it--);
                 --data.currentplayermissile;
@@ -325,9 +313,9 @@ void Game::assortingEnemies(int difficulty,struct enemy enemy[][12])
 void Game::setEnemies()
 {
     data.numofenemies=0;
-    for(int w=0,py=getmaxy()*0.15; w<3; w++,py+=(EnemySize.y*1.5))
+    for(int w=0,py=getmaxy()*0.15; w<3; w++,py+=(Graphics.Alien.GetSizeY()*1.5))
     {
-        for(int k=0,px=(EnemySize.x*2); k<12; k++,px+=(EnemySize.x*1.5))
+        for(int k=0,px=(Graphics.Alien.GetSizeX()*2); k<12; k++,px+=(Graphics.Alien.GetSizeX()*1.5))
         {
             data.enemy[w][k].positionX=px;
             data.enemy[w][k].positionY=py;
@@ -369,13 +357,14 @@ void Game::updateTime()
     if((timeendstage-time(NULL))!=data.timeleft)
     {
         data.timeleft = timeendstage-time(NULL);
-        Bar->SetTime(data.timeleft);
+        InformationBar.SetTime(data.timeleft);
         data.stagetime=data.timeleft;
     }
 }
 
 void Game::saveGame()
 {
+    //TODO Repair this with new player object
     FILE *savedat;
     savedat=fopen("save.dat","wb");
     fwrite(&data,sizeof(data),1,savedat);
@@ -475,8 +464,8 @@ void Game::attackingPlayer()
             {
                 printf("Atakuje przeciwnik %d %d\n",line,column);
             }
-            data.enemymissile.x=(data.enemy[line][column].positionX+EnemySize.x/2);
-            data.enemymissile.y=data.enemy[line][column].positionY+EnemySize.y;
+            data.enemymissile.x=(data.enemy[line][column].positionX+Graphics.Alien.GetSizeX()/2);
+            data.enemymissile.y=data.enemy[line][column].positionY+Graphics.Alien.GetSizeY();
             data.enemymissile.state=MISSILE_LUNCHED;
         }
     }
@@ -493,8 +482,8 @@ void Game::moveEnemyMissile()
                 printf("Przeciwnik trafil gracza! \n");
             }
             --data.life;
-            Bar->SetLife(data.life);
-            data.playerx=(getmaxx()-PlayerSize.x)/2;
+            InformationBar.SetLife(data.life);
+            Player.SetPositionX(Graphics.PlayerShip.ResetX());
             data.enemymissile.state=NO_MISSILE;
         }
         if(data.enemymissile.y<getmaxy())
@@ -521,13 +510,10 @@ void Game::newStage()
         data.boss.stage=true;
         data.boss.direction=rand()/(float(RAND_MAX)+1)*2;
         data.boss.life=data.stage*5;
-        data.boss.x=(getmaxx()-BossSize.x)/2;
+        data.boss.x=(getmaxx()-Graphics.Boss.GetSizeX())/2;
         data.boss.y=getmaxy()*0.15;
         data.stagetime=data.stage*50;
-        if(debug)
-        {
-            printf("Boss stage\n");
-        }
+        if(debug){ std::cout << "Boss stage\n"; }
     }
     else
     {
@@ -535,17 +521,14 @@ void Game::newStage()
         assortingEnemies(data.difficulty,data.enemy);
         setEnemies();
         data.stagetime=data.numofenemies*4*settings.time;
-        if(debug)
-        {
-            printf("Normal stage\n");
-        }
+        if(debug){ std::cout << "Normal stage\n"; }
     }
     data.enemymissile.state=NO_MISSILE;
     data.bonus.drop=false;
     gamestatus=IN_STAGE_SCREEN;
     sprintf(stagetext,"STAGE: %d",data.stage);
-    data.playerx=(getmaxx()-PlayerSize.x)/2;
-    data.playery=getmaxy()-(PlayerSize.y*1.5);
+    Player.SetPositionX(Graphics.PlayerShip.ResetX());
+    Player.SetPositionY(Graphics.PlayerShip.ResetY());
     flushPlayerMissile();
     flushBossMissile();
 }
@@ -593,7 +576,7 @@ void Game::updateBonus()
             }
             if(data.bonus.color==COLOR_BONUS_HEALTH)
             {
-                Bar->SetLife(++data.life);
+                InformationBar.SetLife(++data.life);
             }
             else
             {
@@ -643,7 +626,7 @@ void Game::updateBoss()
     }
     else
     {
-        if((data.boss.x+BossSize.x)<getmaxx())
+        if((data.boss.x+Graphics.Boss.GetSizeX())<getmaxx())
         {
             ++data.boss.x;
         }
@@ -660,10 +643,10 @@ void Game::updateBoss()
             printf("Boss atakuje!\n");
         }
         data.boss.attack=true;
-        int dx=BossSize.x/4;
+        int dx=Graphics.Boss.GetSizeX()/4;
         for(int i=0; i<5; i++)
         {
-            bossmissile.push_back(PlayerMissile((data.boss.x+i*dx),(data.boss.y+BossSize.y)));
+            bossmissile.push_back(PlayerMissile((data.boss.x+i*dx),(data.boss.y+Graphics.Boss.GetSizeY())));
         }
     }
     if(data.boss.attack==true)
@@ -677,11 +660,7 @@ void Game::update()
     switch(gamestatus)
     {
     case IN_GAME:
-        if(data.life<1)
-        {
-            gameOver();
-        }
-        if(data.timeleft<0)
+        if((data.life<1)||(data.timeleft<0))
         {
             gameOver();
         }
@@ -704,20 +683,20 @@ void Game::update()
         updatePlayerMissile();
         updateBonus();
         attackingPlayer();
-        Graphics.Background.update();
+        Graphics.Background.Update();
         moveEnemyMissile();
         switch(code)
         {
         case KEY_RIGHT:
-            if(data.playerx<(getmaxx()-PlayerSize.x*2))
+            if(Player.GetPositionX()<(getmaxx()-Graphics.PlayerShip.GetSizeX()*2))
             {
-                data.playerx+=playerspeed;
+                Player.MoveRight();
             }
             break;
         case KEY_LEFT:
-            if(data.playerx>PlayerSize.x)
+            if(Player.GetPositionX()>Graphics.PlayerShip.GetSizeX())
             {
-                data.playerx-=playerspeed;
+                Player.MoveLeft();
             }
             break;
         case KEY_UP:
@@ -725,7 +704,6 @@ void Game::update()
             break;
         case KEY_ESC:
             pause();
-            //gamestatus=IN_PAUSE_SCREEN;
             freezetime=data.timeleft;
             settextstyle(GOTHIC_FONT,HORIZ_DIR,3);
             break;
@@ -754,13 +732,12 @@ void Game::render()
     case IN_GAME:
         setbkcolor(COLOR_BG);
         cleardevice();
-        Graphics.PlayerShip.Draw(data.playerx,data.playery);
-        Graphics.Background.render();
+        Graphics.Background.Render();
+        Graphics.PlayerShip.Draw(Player.GetPositionX(),Player.GetPositionY());
         printEnemies();
-        //printInfoBar();
-        Bar->Draw();
+        InformationBar.Draw();
         printBonus();
-        Graphics.Particles.run(data.playerx+PlayerSize.x/2-1,data.playery+PlayerSize.y-2);
+        Graphics.Particles.run(Player.GetPositionX()+Graphics.PlayerShip.GetSizeX()/2-1,Player.GetPositionY()+Graphics.PlayerShip.GetSizeY()-2);
         printPlayerMissile();
         if(data.boss.stage)
         {
@@ -786,6 +763,5 @@ void Game::render()
 
 Game::~Game()
 {
-    delete Bar;
-    Bar = NULL;
+
 }

@@ -9,7 +9,7 @@ Background::Background(){
     }
 }
 
-void Background::update(){
+void Background::Update(){
     for(int i=1; i<STARS; i+=2){
         if(stars[i]>getmaxy()){
             stars[i]=0;
@@ -19,7 +19,7 @@ void Background::update(){
     }
 }
 
-void Background::render(){
+void Background::Render(){
     setcolor(COLOR_STARS);
     for(int i=0; i<STARS; i+=2){
         rectangle(stars[i],stars[i+1],stars[i]+1,stars[i+1]+1);

@@ -1,13 +1,12 @@
 #ifndef BOSS_H
 #define BOSS_H
 #include "Poly.h"
-#include "../Color.h"
+#include "../../Color.h"
 
 class Boss
 {
 protected:
-    int SizeX;
-    int SizeY;
+    iXY Size;
     int Scale;
     int BodyColor;
     Poly MainBody;
@@ -15,8 +14,8 @@ protected:
     Poly BodyDetail2;
 public:
     Boss();
-    int GetSizeX(){ return SizeX; };
-    int GetSizeY(){ return SizeY; };
+    int GetSizeX(){ return Size.x; };
+    int GetSizeY(){ return Size.y; };
     void Draw(int x, int y);
 };
 
