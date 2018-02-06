@@ -1,6 +1,6 @@
 #ifndef RANKING_H
 #define RANKING_H
-#include "Color.h"
+#include "Header.h"
 #include "Game/Text.h"
 
 const int RANKING_TEXTS = 7;

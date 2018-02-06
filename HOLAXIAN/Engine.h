@@ -5,7 +5,7 @@
 #include <graphics.h>
 #include <stdlib.h>
 #include <time.h>
-#include "Color.h"
+#include "Header.h"
 #include "Menu.h"
 #include "Help.h"
 #include "Ranking.h"

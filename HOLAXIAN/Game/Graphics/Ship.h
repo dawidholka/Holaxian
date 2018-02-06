@@ -1,6 +1,6 @@
 #ifndef SHIP_H
 #define SHIP_H
-#include "../../Color.h"
+#include "../../Header.h"
 #include "Poly.h"
 
 class Ship

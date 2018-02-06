@@ -100,7 +100,8 @@ void Pause::update(struct gamedata &data, std::vector<PlayerMissile> &playermiss
             break;
         }
     case KEY_ESC:
-        //isMenuRunning=NO;
+        isPauseRunning=false;
+        exitPause=true;
         break;
     }
 }

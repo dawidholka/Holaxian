@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #pragma once
-#include "../../Color.h"
+#include "../../Header.h"
 
 class Player
 {

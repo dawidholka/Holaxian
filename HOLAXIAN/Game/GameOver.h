@@ -1,6 +1,6 @@
 #ifndef GAMEOVER_H
 #define GAMEOVER_H
-#include "../Color.h"
+#include "../Header.h"
 #include "../Game.h"
 
 class GameOver

@@ -1,6 +1,6 @@
 #ifndef INFOBAR_H
 #define INFOBAR_H
-#include "../Color.h"
+#include "../Header.h"
 
 class InfoBar
 {

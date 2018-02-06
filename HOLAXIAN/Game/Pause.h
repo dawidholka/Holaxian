@@ -1,6 +1,6 @@
 #ifndef PAUSE_H
 #define PAUSE_H
-#include "../Color.h"
+#include "../Header.h"
 #include "../Help.h"
 #include "../Game.h"
 #include "Text.h"

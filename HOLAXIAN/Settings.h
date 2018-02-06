@@ -1,6 +1,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
-#include "Color.h"
+#include "Header.h"
 #include "Game/Text.h"
 
 const int SETTINGS_TEXTS = 7;

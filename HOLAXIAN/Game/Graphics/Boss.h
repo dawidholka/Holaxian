@@ -1,7 +1,7 @@
 #ifndef BOSS_H
 #define BOSS_H
 #include "Poly.h"
-#include "../../Color.h"
+#include "../../Header.h"
 
 class Boss
 {

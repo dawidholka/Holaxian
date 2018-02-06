@@ -1,7 +1,7 @@
 #ifndef ALIEN_H
 #define ALIEN_H
 #include "Poly.h"
-#include "../../Color.h"
+#include "../../Header.h"
 
 class Alien
 {

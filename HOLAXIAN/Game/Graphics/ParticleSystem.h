@@ -1,6 +1,6 @@
 #ifndef PARTICLESYSTEM_H
 #define PARTICLESYSTEM_H
-#include "../../Color.h"
+#include "../../Header.h"
 
 class Particle
 {

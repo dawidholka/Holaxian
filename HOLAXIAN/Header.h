@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 #include <stdio.h>
+#include <fstream>
 #include <iostream>
 #include <graphics.h>
 #include <stdlib.h>

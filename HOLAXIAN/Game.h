@@ -1,6 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
-#include "Color.h"
+#include "Header.h"
 #include "Settings.h"
 #include "Help.h"
 #include "Game/Graphics/ParticleSystem.h"

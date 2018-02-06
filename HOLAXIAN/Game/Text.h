@@ -2,7 +2,7 @@
 #define TEXT_H
 #include <stdio.h>
 #include <graphics.h>
-#include "../Color.h"
+#include "../Header.h"
 
 const int DEFAULT_TITLE_SIZE = 10;
 const int DEFAULT_FONT_SIZE = 5;

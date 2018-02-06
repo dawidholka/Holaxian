@@ -1,6 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
-#include "Color.h"
+#include "Header.h"
 #include "Game/Text.h"
 
 const int MENU_TEXTS = 7;

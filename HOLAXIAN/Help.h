@@ -1,6 +1,6 @@
 #ifndef HELP_H
 #define HELP_H
-#include "Color.h"
+#include "Header.h"
 #include "Game/Text.h"
 
 const int HELP_SCREEN_FONT_SIZE = 4;

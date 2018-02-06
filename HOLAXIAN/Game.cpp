@@ -1,6 +1,5 @@
 #include "Game.h"
 
-// TODO Change printf() to std::cout
 // TODO Change fwrite to fstream
 
 Game::Game(bool debugflag,bool loadgame)
@@ -330,6 +329,12 @@ void Game::updateTime()
 void Game::saveGame()
 {
     //TODO Repair this with new player object
+    std::ofstream fout("save.bin", std::ios::out | std::ios::binary);
+    if(!fout.is_open()){
+        std::cout << "Error: Can't open save.bin" << std::endl;
+    }
+    fout.write((char*)&data,sizeof(data));
+    fout.close();
     FILE *savedat;
     savedat=fopen("save.dat","wb");
     fwrite(&data,sizeof(data),1,savedat);
