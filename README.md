@@ -3,6 +3,8 @@ Holaxian - Space Invaders game like - created with graphics.h
 
 Game was created in C++ as a project for a computer science course.
 
+During making this project I was learning C++ from scratch, so my code can be imperfect.
+
 [Download Game.exe](https://github.com/dawidholka/Holaxian/blob/master/Game.exe)
 
 
