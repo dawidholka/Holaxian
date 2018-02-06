@@ -50,7 +50,6 @@ Game::Game(bool debugflag,bool loadgame)
     }
     else
     {
-        //NOWA GRA
         if(debug){ std::cout << "NEW GAME\n"; }
         data.boss.stage=false;
         data.enemymissile.state=NO_MISSILE;
@@ -80,7 +79,6 @@ Game::Game(bool debugflag,bool loadgame)
 
 void Game::run()
 {
-    // Main game loop
     while(isGameRunning)
     {
         input();
@@ -102,10 +100,7 @@ void Game::sendPlayerMissile()
     {
         playermissile.push_back(PlayerMissile((Player.GetPositionX()+(Graphics.PlayerShip.GetSizeX()/2)),(Player.GetPositionY()-25)));
         ++data.currentplayermissile;
-        if(debug)
-        {
-            printf("Wysylam pocisk\n");
-        }
+        if(debug){ std::cout << "Sending missile\n"; }
     }
 }
 
@@ -115,10 +110,7 @@ void Game::updateBossMissile()
     {
         if(getpixel(it->x,it->y+25)==COLOR_HERO)
         {
-            if(debug)
-            {
-                printf("Boss trafil gracza\n");
-            }
+            if(debug){ std::cout << "Boss hit the player\n"; }
             bossmissile.erase(it--);
             --data.life;
             InformationBar.SetLife(data.life);
@@ -164,10 +156,8 @@ void Game::updatePlayerMissile()
         {
             if(getpixel(it->x,it->y-1)==COLOR_BOSS)
             {
-                if(debug)
-                {
-                    printf("Gracz trafil bossa\n");
-                }
+
+                if(debug){ std::cout << "Player hit boss\n"; }
                 playermissile.erase(it--);
                 --data.currentplayermissile;
                 ++data.score;
@@ -212,34 +202,21 @@ void Game::updatePlayerMissile()
                 --data.currentplayermissile;
                 data.numofenemies--;
                 rand();
-                if(debug)
-                {
-                    printf("Gracz trafil przeciwnika %d %d\n",Collision.y,Collision.x);
-                }
+                if(debug){ std::cout << "Player missile hit enemy at " << Collision.y << " " << Collision.x << "\n"; }
                 if(data.bonus.drop==false&&data.numofenemies>0)
                 {
-                    if(debug)
+                    if((rand()/(float(RAND_MAX)+1)*100)<=(50))  //50% chance to get a bonus
                     {
-                        printf("Losuje bonus dla gracza\n");
-                    }
-                    if((rand()/(float(RAND_MAX)+1)*100)<=(50))  //50% szansy na bonus
-                    {
-                        if(debug)
-                        {
-                            printf("Gracz otrzymuje bonus\n");
-                        }
                         data.bonus.drop=true;
-                        if(debug)
+                        if((rand()/(float(RAND_MAX)+1)*100)<=(50)) // rolling bonus type
                         {
-                            printf("Losuje typ bonusu dla gracza\n");
-                        }
-                        if((rand()/(float(RAND_MAX)+1)*100)<=(50))
-                        {
-                            data.bonus.color=COLOR_BONUS_HEALTH; // ZYCKO
+                            if(debug){ std::cout << "Dropping life bonus\n"; }
+                            data.bonus.color=COLOR_BONUS_HEALTH;
                         }
                         else
                         {
-                            data.bonus.color=COLOR_BONUS_WEAPON; // DODATKOWY POCISK
+                            if(debug){ std::cout << "Dropping additional missile bonus\n"; }
+                            data.bonus.color=COLOR_BONUS_WEAPON;
                         }
                         data.bonus.x=data.enemy[Collision.y][Collision.x].positionX+Graphics.Alien.GetSizeX()/2-10;
                         data.bonus.y=data.enemy[Collision.y][Collision.x].positionY;
@@ -279,10 +256,7 @@ void Game::assortingEnemies(int difficulty,struct enemy enemy[][12])
     int c=0;
     do
     {
-        if(debug)
-        {
-            printf("Dobieranie przeciwnikow\n");
-        }
+        if(debug){ std::cout << "Assorting enemies\n"; }
         for(int i=0; i<3; i++)
         {
             for(int j=0; j<12; j++)
@@ -296,15 +270,9 @@ void Game::assortingEnemies(int difficulty,struct enemy enemy[][12])
                 {
                     enemy[i][j].lives=0;
                 }
-                if(debug)
-                {
-                    printf("%d ",enemy[i][j].lives);
-                }
+                if(debug){ std::cout << enemy[i][j].lives; }
             }
-            if(debug)
-            {
-                printf("\n");
-            }
+            if(debug){ std::cout << std::endl; }
         }
     }
     while(c==0);
@@ -325,10 +293,7 @@ void Game::setEnemies()
             }
         }
     }
-    if(debug)
-    {
-        printf("Liczba przeciwnikow %d\n",data.numofenemies);
-    }
+    if(debug){ std::cout << "Number of enemies " << data.numofenemies << std::endl; }
 }
 
 void Game::printEnemies()
@@ -392,14 +357,13 @@ void Game::input()
     }
     else
     {
-        //Jesli gracz nic nie wcisnal to zmien kod
+        // if keyboard has not been pressed
         code=-1;
     }
 }
 
 bool Game::isAlreadyDrawn(int num,int tab[],int how)
 {
-    //Losowanie bez powtorzen
     if(how<=0)
     {
         return false;
@@ -423,17 +387,13 @@ void Game::attackingPlayer()
     {
         if(((data.enemymissile.state)==NO_MISSILE)&&((frame%chancetoattack)==0))
         {
-            if(debug)
-            {
-                printf("Losowanie przeciwnika\n");
-            }
             int alreadydrawn[12];
             int numofalreadydrawn=0;
             int numofdraw=0;
             int line,column;
             line=-1;
             column=-1;
-            rand();//Bo pierwsza wylosowana liczba sie czestopotwarza
+            rand();
             do
             {
                 do
@@ -441,10 +401,6 @@ void Game::attackingPlayer()
                     column=rand()/(float(RAND_MAX)+1)*12;
                     if(isAlreadyDrawn(column,alreadydrawn,numofalreadydrawn)==false)
                     {
-                        if(debug)
-                        {
-                            printf("Wylosowana kolumna: %d\n",column);
-                        }
                         alreadydrawn[numofalreadydrawn]=column;
                         numofalreadydrawn++;
                     }
@@ -460,10 +416,7 @@ void Game::attackingPlayer()
                 numofdraw++;
             }
             while(line==-1&&numofdraw<=12);
-            if(debug)
-            {
-                printf("Atakuje przeciwnik %d %d\n",line,column);
-            }
+            if(debug){ std::cout << "Attacking enemy " << line << " " << column << std::endl;}
             data.enemymissile.x=(data.enemy[line][column].positionX+Graphics.Alien.GetSizeX()/2);
             data.enemymissile.y=data.enemy[line][column].positionY+Graphics.Alien.GetSizeY();
             data.enemymissile.state=MISSILE_LUNCHED;
@@ -477,10 +430,7 @@ void Game::moveEnemyMissile()
     {
         if(getpixel(data.enemymissile.x,data.enemymissile.y+25)==WHITE)
         {
-            if(debug)
-            {
-                printf("Przeciwnik trafil gracza! \n");
-            }
+            if(debug){ std::cout << "Enemy hit the player\n"; }
             --data.life;
             InformationBar.SetLife(data.life);
             Player.SetPositionX(Graphics.PlayerShip.ResetX());
@@ -499,10 +449,7 @@ void Game::moveEnemyMissile()
 
 void Game::newStage()
 {
-    if(debug)
-    {
-        printf("Brak przeciwnikow - Nowy poziom\n");
-    }
+    if(debug){ std::cout << "No enemies left - New level\n"; }
     ++data.stage;
     ++data.difficulty;
     if(data.stage%5==0)
@@ -570,10 +517,7 @@ void Game::updateBonus()
     {
         if((getpixel(data.bonus.x,data.bonus.y+10)==WHITE)||(getpixel(data.bonus.x+20,data.bonus.y+10)==WHITE))
         {
-            if(debug)
-            {
-                printf("Gracz zlapal bonus!\n");
-            }
+            if(debug){ std::cout << "Player caught a bonus\n"; }
             if(data.bonus.color==COLOR_BONUS_HEALTH)
             {
                 InformationBar.SetLife(++data.life);
@@ -638,10 +582,7 @@ void Game::updateBoss()
     }
     if((data.boss.attack==false)&&((frame%chancetoattack)==0))
     {
-        if(debug)
-        {
-            printf("Boss atakuje!\n");
-        }
+        if(debug){ std::cout << "Boss attacking\n"; }
         data.boss.attack=true;
         int dx=Graphics.Boss.GetSizeX()/4;
         for(int i=0; i<5; i++)
